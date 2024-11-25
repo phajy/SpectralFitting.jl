@@ -550,7 +550,7 @@ Flux    │'          ':                           │
 ```
 """
 @xspecmodel :C_jet struct XS_Jet{T} <: AbstractSpectralModel{T,Additive}
-    "MUST BE FIXED AT UNITY as the jet spectrum normalisation is set by the relativisitic particle power."
+    "MUST BE FIXED AT UNITY as the jet spectrum normalisation is set by the relativistic particle power."
     K::T
     "Black hole mass in solar masses."
     mass::T
@@ -568,7 +568,7 @@ Flux    │'          ':                           │
     zdiss::T
     "Magnetic field in the jet (Gauss)."
     B::T
-    "Log of the power injected in relativisitic particles (ergs/s)."
+    "Log of the power injected in relativistic particles (ergs/s)."
     logPrel::T
     "Minimum lorentz factor of the injected electrons."
     gmin_inj::T
