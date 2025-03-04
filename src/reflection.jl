@@ -27,7 +27,7 @@ const DEFAULT_LENS::Lens = :(model)
 const DOMAIN_SYMBOL::Symbol = :(domain)
 const OBJECTIVE_SYMBOL::Symbol = :(objective)
 
-MODEL_SYMBOL_LOOKUP = Dict{AbstractSpectralModelKind,Symbol}(
+const MODEL_SYMBOL_LOOKUP = Dict{AbstractSpectralModelKind,Symbol}(
     Convolutional() => :c,
     Multiplicative() => :m,
     Additive() => :a,
@@ -198,7 +198,7 @@ make_objective_symbol(a::CompositeAggregation) = Symbol(OBJECTIVE_SYMBOL, a.curr
 
 Returns a [`ModelInfo`](@ref) struct for a given model.
 """
-function get_info(model::Type{<:AbstractSpectralModel}, lens::Lens)
+function get_info(@nospecialize(model::Type{<:AbstractSpectralModel}), lens::Lens)
     symbs = [get_parameter_symbols(model)...]
     gen_symbs = map(Base.gensym, symbs)
 
@@ -207,7 +207,11 @@ function get_info(model::Type{<:AbstractSpectralModel}, lens::Lens)
 
     ModelInfo(symbs, gen_symbs, closure_symbs, gen_closure_symbs, lens, model)
 end
-function get_info(model::Type{<:CompositeModel}, lens::Lens; T::Type = Float64)
+function get_info(
+    @nospecialize(model::Type{<:CompositeModel}),
+    lens::Lens;
+    T::Type = Float64,
+)
     agg = CompositeAggregation()
     expr = _add_composite_info!(agg, model, lens, T)
     CompositeModelInfo(agg.info_map, expr, agg.expressions, agg.max_obj_count)
@@ -306,7 +310,10 @@ Assemble the full composite model call, with objective unpacking via
 invocation, and objective reduction. Uses [`assemble_fast_call`](@ref) to put
 the final function body together.
 """
-function assemble_composite_model_call(model::Type{<:CompositeModel}, parameters)
+function assemble_composite_model_call(
+    @nospecialize(model::Type{<:CompositeModel}),
+    parameters,
+)
     # propagate information about free parameters to allow for AD
     info = get_info(model, DEFAULT_LENS; T = eltype(parameters))
     unpack = assemble_objective_unpack(info.maximum_objective_cache_count)

@@ -44,19 +44,17 @@ end
 
 function Base.show(io::IO, ::MIME"text/plain", @nospecialize(model::FittableMultiModel))
     buff = IOBuffer()
-    println(buff, "Models:")
+    buff_c = IOContext(buff, io)
+    println(buff_c, "Models:")
     for (i, m) in enumerate(model.m)
         buf = IOBuffer()
-        print(
-            buf,
-            "\n",
-            Crayons.Crayon(foreground = :yellow),
-            "Model $i",
-            Crayons.Crayon(reset = true),
-            ": ",
-        )
+
+        println(buf)
+        printstyled(buf, "Model $i", color = :yellow)
+        print(buf, ": ")
+
         _printinfo(buf, m)
-        print(buff, indent(String(take!(buf)), 2))
+        print(buff_c, indent(String(take!(buf)), 2))
     end
     print(io, encapsulate(String(take!(buff))))
 end
@@ -90,7 +88,7 @@ end
 
 `items` is a tuple or vector of lengths `n1, n2, ...`
 
-Returns a tuple or array with same length as items, which gives the index boundaries of 
+Returns a tuple or array with same length as items, which gives the index boundaries of
 an array with size `n1 + n2 + ...`.
 """
 function _accumulated_indices(items)
@@ -129,10 +127,12 @@ end
 
 function Base.show(io::IO, ::MIME"text/plain", @nospecialize(prob::FittingProblem))
     buff = IOBuffer()
-    println(buff, "FittingProblem:")
-    println(buff, "  . Models     : $(length(prob.model.m))")
-    println(buff, "  . Datasets   : $(length(prob.data.d))")
-    println(buff, "  Parameter Summary:")
+    buff_c = IOContext(buff, io)
+
+    println(buff_c, "FittingProblem:")
+    println(buff_c, "  . Models     : $(length(prob.model.m))")
+    println(buff_c, "  . Datasets   : $(length(prob.data.d))")
+    println(buff_c, "  Parameter Summary:")
 
     factor = div(length(prob.data.d), length(prob.model.m))
 
@@ -156,56 +156,45 @@ function Base.show(io::IO, ::MIME"text/plain", @nospecialize(prob::FittingProble
     end
     free = free - bound
 
-    println(buff, "  . Total      : $(total)")
-    println(
-        buff,
-        "  . ",
-        Crayons.Crayon(foreground = :cyan),
-        "Frozen",
-        Crayons.Crayon(reset = true),
-        "     : $(frozen)",
-    )
-    println(
-        buff,
-        "  . ",
-        Crayons.Crayon(foreground = :magenta),
-        "Bound",
-        Crayons.Crayon(reset = true),
-        "      : $(bound)",
-    )
-    println(
-        buff,
-        "  . ",
-        Crayons.Crayon(foreground = :green),
-        "Free",
-        Crayons.Crayon(reset = true),
-        "       : $(free)",
-    )
+    println(buff_c, "  . Total      : $(total)")
+
+    print(buff_c, "  . ")
+    printstyled(buff_c, "Frozen", color = :cyan)
+    println(buff_c, "     : $(frozen)")
+
+    print(buff_c, "  . ")
+    printstyled(buff_c, "Bound", color = :cyan)
+    println(buff_c, "      : $(bound)")
+
+    print(buff_c, "  . ")
+    printstyled(buff_c, "Free", color = :cyan)
+    println(buff_c, "       : $(free)")
+
     print(io, encapsulate(String(take!(buff))))
 end
 
 
 """
     details(prob::FittingProblem)
-    
+
 Show details about the fitting problem, including the specific model parameters that are bound together.
 """
-function details(prob::FittingProblem)
+function details(prob::FittingProblem; color = true)
     buff = IOBuffer()
-    println(buff, "Models:")
+    buff_ctx = IOContext(buff, :color => color)
+
+    # TODO: this is a horribly implemented function
+    print(buff_ctx, "Models:")
     for (i, m) in enumerate(prob.model.m)
         buf = IOBuffer()
-        print(
-            buf,
-            "\n",
-            Crayons.Crayon(foreground = :yellow),
-            "Model $i",
-            Crayons.Crayon(reset = true),
-            ": ",
-        )
+        buf_ctx = IOContext(buf, buff_ctx)
 
-        _printinfo(buf, m; bindings = translate_bindings(i, prob.model, prob.bindings))
-        print(buff, indent(String(take!(buf)), 2))
+        println(buf_ctx)
+        printstyled(buf_ctx, "Model $i", color = :yellow)
+        print(buf_ctx, ": ")
+
+        _printinfo(buf_ctx, m; bindings = translate_bindings(i, prob.model, prob.bindings))
+        print(buff_ctx, indent(String(take!(buf)), 2))
     end
 
     print(encapsulate(String(take!(buff))))

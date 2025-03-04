@@ -1,8 +1,8 @@
 """
     abstract type AbstractDataset
-    
-Abstract type for use in fitting routines. High level representation of some underlying 
-data structures. 
+
+Abstract type for use in fitting routines. High level representation of some underlying
+data structures.
 
 Fitting data is considered to have an *objective* and a *domain*. As
 the domain may be, for example, energy bins (high and low), or
@@ -44,7 +44,7 @@ abstract type AbstractDataset end
 
 function Base.show(io::IO, ::MIME"text/plain", @nospecialize(data::AbstractDataset))
     buff = IOBuffer()
-    _printinfo(buff, data)
+    _printinfo(IOContext(buff, io), data)
     s = String(take!(buff))
     print(io, encapsulate(s))
 end
@@ -87,7 +87,7 @@ make_model_domain(layout::AbstractLayout, dataset::AbstractDataset) =
     error("Layout $(layout) is not implemented for $(typeof(dataset))")
 
 """
-    make_domain_variance(layout::AbstractLayout, dataset::AbstractDataset) 
+    make_domain_variance(layout::AbstractLayout, dataset::AbstractDataset)
 
 Make the variance vector associated with the domain.
 """
@@ -99,7 +99,7 @@ make_domain_variance(layout::AbstractLayout, dataset::AbstractDataset) =
 
 Returns the array used as the output domain. That is, in cases where the model
 input and output map to different domains, the input domain is said to be the
-model domain, the input domain is said to be the model domain. 
+model domain, the input domain is said to be the model domain.
 
 The distinction is mainly used for the purposes of simulating data and for
 visualising data.

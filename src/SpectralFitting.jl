@@ -18,10 +18,10 @@ using FileIO
 using Interpolations
 import DataInterpolations
 using SpecialFunctions
+using Polynomials
 using PreallocationTools
 using EnumX
 
-import Crayons
 # fitting backends
 import ForwardDiff
 import LsqFit
@@ -29,9 +29,7 @@ import Optimization
 
 using DocStringExtensions
 
-# for future use: mission specific parsing
-abstract type AbstractMission end
-struct NoMission <: AbstractMission end
+abstract type AbstractInstrument end
 
 abstract type AbstractStatistic end
 struct ChiSquared <: AbstractStatistic end
@@ -58,8 +56,6 @@ include("meta-models/table-models.jl")
 include("meta-models/surrogate-models.jl")
 include("meta-models/caching.jl")
 include("meta-models/functions.jl")
-
-include("poisson.jl")
 
 include("datasets/ogip.jl")
 include("datasets/datasets.jl")

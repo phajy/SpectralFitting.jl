@@ -1,20 +1,63 @@
-struct BinnedData{V} <: AbstractDataset
+"""
+    struct BinnedData{Tag,V,D} <: AbstractDataset
+
+    function BinnedData(
+        domain,
+        codomain;
+        tag = nothing,
+        domain_variance = nothing,
+        codomain_variance = nothing,
+        user_data = nothing,
+        name = "[no-name]",
+    )
+        @assert length(domain) == length(codomain) + 1 "Data does not look like it is binned!"
+        BinnedData{tag}(domain, codomain, domain_variance, codomain_variance, name, user_data)
+    end
+
+A datastructure for contiguously binned data (see [`ContiguouslyBinned`](@ref)).
+This is the binned analogue to [`InjectiveData`](@ref).
+
+The parameters have the following meaning:
+- `Tag`: an optional user-defined tag that can be used to overwrite method dispatches (default: nothing).
+- `V`: the type of the domain, co-domain, and variance vectors (default: inferred from arguments).
+- `D`: the optional additional user-defined data type (default: nothing).
+
+$(FIELDS)
+"""
+struct BinnedData{Tag,V,D} <: AbstractDataset
+    "The domain of the data as pairs of low and high bins, such that  `E_i` and
+    `E_i+1` are the low and high bins of element `i` respectively."
     domain::V
+    "The co-domain (objective) of the dataset."
     codomain::V
+    "The variance for each bin edge. Todo: maybe remove?"
     domain_variance::Union{Nothing,V}
+    "The variance for the value in each bin."
     codomain_variance::Union{Nothing,V}
+    "Dataset name."
     name::String
+    "Optional user specific data that can be kept along with the dataset."
+    user_data::D
 end
 
 function BinnedData(
     domain,
     codomain;
+    tag = nothing,
     domain_variance = nothing,
     codomain_variance = nothing,
+    user_data = nothing,
     name = "[no-name]",
 )
     @assert length(domain) == length(codomain) + 1 "Data does not look like it is binned!"
-    BinnedData(domain, codomain, domain_variance, codomain_variance, name)
+    BinnedData{tag,promote_type(typeof(domain), typeof(codomain)),typeof(user_data)}(
+        domain,
+        codomain,
+        domain_variance,
+        codomain_variance,
+        name,
+        user_data,
+    )
 end
 
 supports(::Type{<:BinnedData}) = (ContiguouslyBinned(), OneToOne())
@@ -33,7 +76,10 @@ make_objective(::OneToOne, dataset::BinnedData) = dataset.codomain
 make_output_domain(layout::AbstractLayout, dataset::BinnedData) =
     make_model_domain(layout, dataset)
 
-function make_objective_variance(::AbstractLayout, dataset::BinnedData{V})::V where {V}
+function make_objective_variance(
+    ::AbstractLayout,
+    dataset::BinnedData{Tag,V},
+)::V where {Tag,V}
     if !isnothing(dataset.codomain_variance)
         dataset.codomain_variance
     else
@@ -55,17 +101,11 @@ end
 make_label(dataset::BinnedData) = dataset.name
 
 function _printinfo(io::IO, data::BinnedData)
-    println(
-        io,
-        Crayons.Crayon(foreground = :cyan),
-        "BinnedData",
-        Crayons.Crayon(reset = true),
-        " with ",
-        Crayons.Crayon(foreground = :cyan),
-        length(data.domain),
-        Crayons.Crayon(reset = true),
-        " data points:",
-    )
+    printstyled(io, "BinnedData", color = :cyan)
+    print(io, " with ")
+    printstyled(io, length(data.codomain), color = :cyan)
+    println(io, " data points:")
+
     dmin, dmax = prettyfloat.(extrema(data.domain))
     comin, comax = prettyfloat.(extrema(data.codomain))
     descr = """  Name                  : $(data.name)

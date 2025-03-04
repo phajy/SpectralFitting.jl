@@ -58,17 +58,11 @@ end
 make_label(dataset::InjectiveData) = dataset.name
 
 function _printinfo(io::IO, data::InjectiveData)
-    println(
-        io,
-        Crayons.Crayon(foreground = :cyan),
-        "InjectiveData",
-        Crayons.Crayon(reset = true),
-        " with ",
-        Crayons.Crayon(foreground = :cyan),
-        length(data.domain),
-        Crayons.Crayon(reset = true),
-        " data points:",
-    )
+    printstyled(io, "InjectiveData", color = :cyan)
+    print(io, " with ")
+    printstyled(io, length(data.domain), color = :cyan)
+    println(io, " data points:")
+
     dmin, dmax = prettyfloat.(extrema(data.domain))
     comin, comax = prettyfloat.(extrema(data.codomain))
     descr = """  Name                  : $(data.name)

@@ -99,17 +99,23 @@ typeof(model) <: CompositeModel # true
 struct CompositeModel{M1,M2,O,T,K} <: AbstractSpectralModel{T,K}
     left::M1
     right::M2
-    op::O
-    CompositeModel(
+
+    CompositeModel{M1,M2,O}(
         m1::M1,
         m2::M2,
-        op::O,
     ) where {M1<:AbstractSpectralModel{T},M2<:AbstractSpectralModel{T,K},O} where {T,K} =
-        new{M1,M2,O,T,K}(copy(m1), copy(m2), op)
+        new{M1,M2,O,T,K}(copy(m1), copy(m2))
 end
 
-function Base.copy(m::CompositeModel)
-    CompositeModel(getfield(m, :left), getfield(m, :right), getfield(m, :op))
+CompositeModel(
+    m1::M1,
+    m2::M2,
+    ::O,
+) where {M1<:AbstractSpectralModel,M2<:AbstractSpectralModel,O} =
+    CompositeModel{M1,M2,O}(copy(m1), copy(m2))
+
+function Base.copy(m::CompositeModel{M1,M2,O}) where {M1,M2,O}
+    CompositeModel{M1,M2,O}(getfield(m, :left), getfield(m, :right))
 end
 
 function implementation(::Type{<:CompositeModel{M1,M2}}) where {M1,M2}
@@ -147,14 +153,9 @@ function Base.show(io::IO, @nospecialize(model::CompositeModel))
         name = "$(Base.typename(typeof(model)).name)"
         expr = replace(expr, s => name)
     end
-    print(
-        io,
-        "CompositeModel[",
-        Crayons.Crayon(foreground = :cyan),
-        "$(expr)",
-        Crayons.Crayon(reset = true),
-        "]",
-    )
+    print(io, "CompositeModel[")
+    printstyled(io, "$(expr)", color = :cyan)
+    print(io, "]")
 end
 
 function _print_param(io, free, name, val, q0, q1, q2, q3, q4; binding = nothing)
@@ -168,28 +169,13 @@ function _print_param(io, free, name, val, q0, q1, q2, q3, q4; binding = nothing
         end
 
         if !isnothing(binding)
-            print(
-                io,
-                "   ",
-                Crayons.Crayon(foreground = :magenta),
-                lpad(binding, 7),
-                Crayons.Crayon(reset = true),
-            )
+            print(io, "   ")
+            printstyled(io, lpad(binding, 7), color = :magenta)
         elseif free
-            print(
-                io,
-                Crayons.Crayon(foreground = :green),
-                lpad("FREE", 7),
-                Crayons.Crayon(reset = true),
-            )
+            printstyled(io, lpad("FREE", 7), color = :green)
         else
-            print(
-                io,
-                "  ",
-                Crayons.Crayon(foreground = :cyan),
-                lpad("FROZEN", 15 + q1 + q2 + q3 + q4),
-                Crayons.Crayon(reset = true),
-            )
+            print(io, "  ")
+            printstyled(io, lpad("FROZEN", 15 + q1 + q2 + q3 + q4), color = :cyan)
         end
     end
     println(io)
@@ -210,30 +196,22 @@ function _printinfo(io::IO, @nospecialize(model::CompositeModel); bindings = not
         length("$s")
     end
 
-    print(io, "CompositeModel with $(length(destructed.model_map)) model components:\n")
-    println(
-        io,
-        Crayons.Crayon(foreground = :cyan),
-        " "^expr_buffer,
-        destructed.expression,
-        Crayons.Crayon(reset = true),
-    )
+    println(io, "CompositeModel with $(length(destructed.model_map)) model components:")
+    print(io, " "^expr_buffer)
+    printstyled(io, destructed.expression, color = :cyan)
+    println(io)
     println(io, "Model key and parameters:")
 
     param_index = 1
     for (sym, m) in destructed.model_map
         param_syms = destructed.parameter_symbols[sym]
         basename = Base.typename(typeof(m)).name
-        println(
-            io,
-            Crayons.Crayon(foreground = :cyan),
-            lpad("$sym", sym_buffer),
-            Crayons.Crayon(reset = true),
-            " => ",
-            Crayons.Crayon(foreground = :cyan),
-            "$basename",
-            Crayons.Crayon(reset = true),
-        )
+
+        printstyled(io, lpad("$sym", sym_buffer), color = :cyan)
+        print(io, " => ")
+        printstyled(io, "$basename", color = :cyan)
+        println(io)
+
         for ps in param_syms
             param = destructed.parameter_map[ps]
             free = param isa FitParam ? !isfrozen(param) : true
@@ -248,9 +226,6 @@ function _printinfo(io::IO, @nospecialize(model::CompositeModel); bindings = not
     end
 end
 
-function remake_with_number_type(model::CompositeModel)
-    error("Todo")
-end
 # explicitly disable interface for ConstructionBase.jl
 ConstructionBase.setproperties(::CompositeModel, ::NamedTuple) =
     throw("Cannot be used with `CompositeModel`.")

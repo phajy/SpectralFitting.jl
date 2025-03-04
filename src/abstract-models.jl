@@ -356,12 +356,12 @@ end
 
 function Base.show(io::IO, ::MIME"text/plain", @nospecialize(model::AbstractSpectralModel))
     buff = IOBuffer()
-    _printinfo(buff, model)
+    _printinfo(IOContext(buff, io), model)
     s = String(take!(buff))
     print(io, encapsulate(s))
 end
 
-# todo: this function could be cleaned up with some generated hackery 
+# todo: this function could be cleaned up with some generated hackery
 function remake_with_number_type(model::AbstractSpectralModel{P}, T::Type) where {P}
     params = parameter_tuple(model)
     new_params = if P <: FitParam

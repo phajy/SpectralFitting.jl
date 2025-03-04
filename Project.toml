@@ -1,11 +1,10 @@
 name = "SpectralFitting"
 uuid = "f2c56810-742e-4b72-8bf4-27af3bb81a12"
 authors = ["Fergus Baker <fergusbkr@gmail.com>"]
-version = "0.6.2"
+version = "0.6.6"
 
 [deps]
 ConstructionBase = "187b0558-2788-49d3-abe0-74a17ed4e7c9"
-Crayons = "a8cc5b0e-0ffa-5ad4-8c14-923d3ee1735f"
 DataInterpolations = "82cc6244-b520-54b8-b5a6-8a565e85f1d0"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
@@ -21,6 +20,7 @@ LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 LsqFit = "2fda8390-95c7-5789-9bda-21331edee243"
 Optimization = "7f7a1694-90dd-40f0-9382-eb1efda571ba"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
+Polynomials = "f27b6e38-b328-58d1-80ce-0feddd5e7a45"
 PreallocationTools = "d236fae5-4411-538c-8e31-a6e3d9e00b46"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
@@ -32,3 +32,5 @@ Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 Surrogates = "6fc51010-71bc-11e9-0e15-a3fcc6593c49"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
+[compat]
+Polynomials = "4.0.12"

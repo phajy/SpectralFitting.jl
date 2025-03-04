@@ -13,7 +13,7 @@ function _pretty_print_result(model, u, σ, chi2)
       Model: $(model)
       . u     : [$(ppu)]
       . σᵤ    : [$(ppσ)]
-      . χ²    : $(ppx2) 
+      . χ²    : $(ppx2)
     """
 end
 
@@ -132,13 +132,15 @@ function Base.show(io::IO, ::MIME"text/plain", @nospecialize(res::MultiFittingRe
     total_χ2 = prettyfloat(sum(res.χ2s))
 
     buff = IOBuffer()
-    println(buff, "MultiFittingResult:")
-    print(buff, " ")
+    buff_c = IOContext(buff, io)
+
+    println(buff_c, "MultiFittingResult:")
+    print(buff_c, " ")
     for i = 1:length(res.us)
         slice = res[i]
         b = _pretty_print_result(get_model(slice), slice.u, slice.σu, slice.χ2)
         r = indent(b, 1)
-        print(buff, r)
+        print(buff_c, r)
     end
     text = String(take!(buff))
     print(io, encapsulate(text) * "Σχ² = $(total_χ2)")

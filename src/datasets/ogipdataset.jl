@@ -1,5 +1,6 @@
-struct OGIPDataset{T,H} <: AbstractDataset
-    data::SpectralData{T}
+struct OGIPData end
+
+struct OGIPMetadata{H}
     paths::SpectralDataPaths
     observation_id::String
     exposure_id::String
@@ -7,7 +8,7 @@ struct OGIPDataset{T,H} <: AbstractDataset
     header::H
 end
 
-function load_ogip_dataset(
+function ogip_dataset(
     spec_path;
     hdu = 2,
     background = nothing,
@@ -27,24 +28,30 @@ function load_ogip_dataset(
     exposure_id = haskey(header, "EXP_ID") ? header["EXP_ID"] : "[no exposure id]"
     object = haskey(header, "OBJECT") ? header["OBJECT"] : "[no object]"
 
-    data = SpectralData(paths)
-    (data, paths, obs_id, exposure_id, object, header)
+    (; paths, obs_id, exposure_id, object, header)
 end
 
-OGIPDataset(spec_path; kwargs...) = OGIPDataset(load_ogip_dataset(spec_path; kwargs...)...)
+function OGIPDataset(spec_path; tag = OGIPData(), kwargs...)
+    info = ogip_dataset(spec_path; kwargs...)
+    metadata =
+        OGIPMetadata(info.paths, info.obs_id, info.exposure_id, info.object, info.header)
+    SpectralData(info.paths, tag = tag, user_data = metadata)
+end
 
-@_forward_SpectralData_api OGIPDataset.data
+make_label(data::SpectralData{T,<:Union{<:AbstractInstrument,<:OGIPData}}) where {T} =
+    data.user_data.observation_id
 
-make_label(d::OGIPDataset) = d.observation_id
-
-function _printinfo(io, data::OGIPDataset{T}) where {T}
-    descr = """OGIPDataset:
-      . Object              : $(data.object)
-      . Observation ID      : $(data.observation_id)
-      . Exposure ID         : $(data.exposure_id)
+function _printinfo(
+    io,
+    data::SpectralData{T,K},
+) where {T,K<:Union{<:AbstractInstrument,<:OGIPData}}
+    descr = """SpectralDataset{$K}:
+      . Object              : $(data.user_data.object)
+      . Observation ID      : $(data.user_data.observation_id)
+      . Exposure ID         : $(data.user_data.exposure_id)
     """
     print(io, descr)
-    _printinfo(io, data.data)
+    print_spectral_data_info(io, data)
 end
 
 export OGIPDataset

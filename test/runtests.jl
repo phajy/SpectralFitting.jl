@@ -92,6 +92,7 @@ end
     @time include("fitting/test-results.jl")
 
     @time include("fitting/test-fit-powerlaw.jl")
+    @time include("fitting/test-models.jl")
 
     @testset "multifits" begin
         @time include("fitting/test-fit-multi.jl")

@@ -1,4 +1,4 @@
-# TODO: could be Response or Redistribution : how do we track this? 
+# TODO: could be Response or Redistribution : how do we track this?
 mutable struct ResponseMatrix{T}
     matrix::SparseMatrixCSC{T,Int}
     channels::Vector{Int}
@@ -86,14 +86,11 @@ function _printinfo(io, resp::ResponseMatrix{T}) where {T}
     c_emin, c_emax = prettyfloat(minimum(resp.channel_bins_low)),
     prettyfloat(maximum(resp.channel_bins_high))
     ranks, files = size(resp.matrix)
-    println(
-        io,
-        "Response Matrix ",
-        Crayons.Crayon(foreground = :cyan),
-        "($ranks x $files)",
-        Crayons.Crayon(reset = true),
-        " channels:",
-    )
+
+    print(io, "Response Matrix")
+    printstyled(io, "($ranks x $files)", color = :cyan)
+    println(io, "channels:")
+
     descr = """  . Chn. E (min/max)    : ($c_emin, $c_emax)
       . Domain E (min/max)  : ($emin, $emax)
     """

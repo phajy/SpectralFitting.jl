@@ -85,7 +85,7 @@ If the spectrum and repsonse matrix have already been loaded seperately, use
         ancillary = nothing,
     )
 """
-mutable struct SpectralData{T} <: AbstractDataset
+mutable struct SpectralData{T,Tag,D} <: AbstractDataset
     "Observed spectrum to be fitted."
     spectrum::Spectrum{T}
     "Instrument response."
@@ -102,27 +102,42 @@ mutable struct SpectralData{T} <: AbstractDataset
     domain::Vector{T}
     "Mask representing which bins are to be included in the fit."
     data_mask::BitVector
+    user_data::D
 end
 
 # constructor
 
-function SpectralData(paths::SpectralDataPaths; kwargs...)
+function SpectralData(
+    paths::SpectralDataPaths;
+    tag = nothing,
+    user_data = nothing,
+    kwargs...,
+)
     spec, resp, back, anc = _read_all_ogip(paths; kwargs...)
-    SpectralData(spec, resp; background = back, ancillary = anc)
+    SpectralData(
+        spec,
+        resp;
+        background = back,
+        ancillary = anc,
+        tag = tag,
+        user_data = user_data,
+    )
 end
 
 function SpectralData(
-    spectrum::Spectrum,
+    spectrum::Spectrum{T},
     response::ResponseMatrix;
     # try to match the domains of the response matrix to the data
     match_domains = true,
     background = nothing,
     ancillary = nothing,
-)
+    tag = nothing,
+    user_data = nothing,
+) where {T}
     domain = _make_domain_vector(spectrum, response)
     energy_low, energy_high = _make_energy_vector(spectrum, response)
     data_mask = BitVector(fill(true, size(spectrum.data)))
-    data = SpectralData(
+    data = SpectralData{T,typeof(tag),typeof(user_data)}(
         spectrum,
         response,
         background,
@@ -131,6 +146,7 @@ function SpectralData(
         energy_high,
         domain,
         data_mask,
+        user_data,
     )
     if !check_domains(data)
         if match_domains
@@ -143,7 +159,7 @@ function SpectralData(
 end
 
 function Base.copy(data::SpectralData)
-    SpectralData(
+    typeof(data)(
         data.spectrum,
         data.response,
         data.background,
@@ -152,6 +168,7 @@ function Base.copy(data::SpectralData)
         copy(data.energy_high),
         copy(data.domain),
         copy(data.data_mask),
+        copy(data.user_data),
     )
 end
 
@@ -523,76 +540,6 @@ function invokemodel(
     invokemodel!(output, domain, model, cache)[data.data_mask]
 end
 
-macro _forward_SpectralData_api(args)
-    if args.head !== :.
-        error("Bad syntax")
-    end
-    T, field = args.args
-    quote
-        SpectralFitting.supports(t::Type{<:$(T)}) = (ContiguouslyBinned(),)
-        SpectralFitting.preferred_units(t::Type{<:$(T)}, u::AbstractStatistic) =
-            SpectralFitting.preferred_units(SpectralData, u)
-        SpectralFitting.make_output_domain(
-            layout::SpectralFitting.AbstractLayout,
-            t::$(T),
-        ) = SpectralFitting.make_output_domain(layout, getfield(t, $(field)))
-        SpectralFitting.make_model_domain(layout::SpectralFitting.AbstractLayout, t::$(T)) =
-            SpectralFitting.make_model_domain(layout, getfield(t, $(field)))
-        SpectralFitting.make_domain_variance(
-            layout::SpectralFitting.AbstractLayout,
-            t::$(T),
-        ) = SpectralFitting.make_domain_variance(layout, getfield(t, $(field)))
-        SpectralFitting.make_objective(layout::SpectralFitting.AbstractLayout, t::$(T)) =
-            SpectralFitting.make_objective(layout, getfield(t, $(field)))
-        SpectralFitting.make_objective_variance(
-            layout::SpectralFitting.AbstractLayout,
-            t::$(T),
-        ) = SpectralFitting.make_objective_variance(layout, getfield(t, $(field)))
-        SpectralFitting.objective_transformer(
-            layout::SpectralFitting.AbstractLayout,
-            t::$(T),
-        ) = SpectralFitting.objective_transformer(layout, getfield(t, $(field)))
-        SpectralFitting.regroup!(t::$(T), args...; kwargs...) =
-            SpectralFitting.regroup!(getfield(t, $(field)), args...; kwargs...)
-        SpectralFitting.restrict_domain!(t::$(T), args...) =
-            SpectralFitting.restrict_domain!(getfield(t, $(field)), args...)
-        SpectralFitting.mask_energies!(t::$(T), args...) =
-            SpectralFitting.mask_energies!(getfield(t, $(field)), args...)
-        SpectralFitting.drop_channels!(t::$(T), args...) =
-            SpectralFitting.drop_channels!(getfield(t, $(field)), args...)
-        SpectralFitting.drop_bad_channels!(t::$(T)) =
-            SpectralFitting.drop_bad_channels!(getfield(t, $(field)))
-        SpectralFitting.drop_negative_channels!(t::$(T)) =
-            SpectralFitting.drop_negative_channels!(getfield(t, $(field)))
-        SpectralFitting.normalize!(t::$(T)) =
-            SpectralFitting.normalize!(getfield(t, $(field)))
-        SpectralFitting.objective_units(t::$(T)) =
-            SpectralFitting.objective_units(getfield(t, $(field)))
-        SpectralFitting.spectrum_energy(t::$(T)) =
-            SpectralFitting.spectrum_energy(getfield(t, $(field)))
-        SpectralFitting.bin_widths(t::$(T)) =
-            SpectralFitting.bin_widths(getfield(t, $(field)))
-        SpectralFitting.subtract_background!(t::$(T), args...) =
-            SpectralFitting.subtract_background!(getfield(t, $(field)), args...)
-        SpectralFitting.set_domain!(t::$(T), args...) =
-            SpectralFitting.set_domain!(getfield(t, $(field)), args...)
-        SpectralFitting.error_statistic(t::$(T)) =
-            SpectralFitting.error_statistic(getfield(t, $(field)))
-        SpectralFitting.set_units!(t::$(T), args...) =
-            SpectralFitting.set_units!(getfield(t, $(field)), args...)
-        SpectralFitting.background_dataset(t::$(T), args...; kwargs...) =
-            SpectralFitting.background_dataset(getfield(t, $(field)), args...; kwargs...)
-        SpectralFitting.rescale_background!(t::$(T), args...; kwargs...) =
-            SpectralFitting.rescale_background!(
-                getfield(t, $(field)),
-                args...;
-                kwargs...,
-            )
-        SpectralFitting.rescale!(t::$(T), args...; kwargs...) =
-            SpectralFitting.rescale!(getfield(t, $(field)), args...; kwargs...)
-    end |> esc
-end
-
 # printing utilities
 
 function Base.show(io::IO, @nospecialize(data::SpectralData))
@@ -600,21 +547,20 @@ function Base.show(io::IO, @nospecialize(data::SpectralData))
 end
 
 function _printinfo(io, data::SpectralData{T}) where {T}
+    print_spectral_data_info(io, data)
+end
+
+function print_spectral_data_info(io, data::SpectralData{T}) where {T}
     domain = @views data.domain
     ce_min = @views prettyfloat.(minimum(data.energy_low[data.data_mask]))
     ce_max = @views prettyfloat.(maximum(data.energy_high[data.data_mask]))
     dom_min, dom_max = @views prettyfloat.(extrema(domain))
-    @views println(
-        io,
-        Crayons.Crayon(foreground = :cyan),
-        "SpectralData",
-        Crayons.Crayon(reset = true),
-        " with ",
-        Crayons.Crayon(foreground = :cyan),
-        length(data.energy_low[data.data_mask]),
-        Crayons.Crayon(reset = true),
-        " active channels:",
-    )
+
+    printstyled(io, "SpectralData", color = :cyan)
+    print(io, " with ")
+    @views printstyled(io, length(data.energy_low[data.data_mask]), color = :cyan)
+    println(io, " active channels: ")
+
     descr = """  . Chn. E (min/max)    : ($ce_min, $ce_max)
       . Masked channels     : $(count(==(false), data.data_mask)) / $(length(data.data_mask))
       . Model domain size   : $(length(domain))
@@ -622,60 +568,30 @@ function _printinfo(io, data::SpectralData{T}) where {T}
     """
     print(io, descr)
 
-    print(
-        io,
-        Crayons.Crayon(foreground = :cyan),
-        "Primary Spectrum:",
-        Crayons.Crayon(reset = true),
-        "\n ",
-    )
+    printstyled(io, "Primary Spectrum:", color = :cyan)
+    println(io, "")
     _printinfo(io, data.spectrum)
 
-    print(
-        io,
-        Crayons.Crayon(foreground = :cyan),
-        "Response:",
-        Crayons.Crayon(reset = true),
-        "\n ",
-    )
+    printstyled(io, "Response:", color = :cyan)
+    println(io, "")
     _printinfo(io, data.response)
 
     if has_background(data)
-        print(
-            io,
-            Crayons.Crayon(foreground = :cyan),
-            "Background: ",
-            Crayons.Crayon(reset = true),
-            "\n ",
-        )
+        printstyled(io, "Background:", color = :cyan)
+        println(io, "")
         _printinfo(io, data.background)
     else
-        print(
-            io,
-            Crayons.Crayon(foreground = :dark_gray),
-            "Background: nothing",
-            Crayons.Crayon(reset = true),
-            "\n",
-        )
+        printstyled(io, "Background: nothing", color = :gray)
+        println(io, "")
     end
 
     if has_ancillary(data)
-        print(
-            io,
-            Crayons.Crayon(foreground = :cyan),
-            "Ancillary:",
-            Crayons.Crayon(reset = true),
-            "\n ",
-        )
+        printstyled(io, "Ancillary:", color = :cyan)
+        println(io, "")
         _printinfo(io, data.ancillary)
     else
-        print(
-            io,
-            Crayons.Crayon(foreground = :dark_gray),
-            "Ancillary: nothing",
-            Crayons.Crayon(reset = true),
-            "\n",
-        )
+        printstyled(io, "Ancillary: nothing", color = :gray)
+        println(io, "")
     end
 end
 

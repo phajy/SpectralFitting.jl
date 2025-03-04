@@ -18,7 +18,7 @@ The first thing we want to do is load our datasets. Unlike in XSPEC, we have no 
 using SpectralFitting, XSPECModels, Plots
 
 DATADIR = "..."
-DATADIR = length(get(ENV, "CI", "")) > 0 ? @__DIR__() * "/../../ex-datadir" : "/home/lilith/Developer/jl/datasets/xspec/walkthrough" # hide
+DATADIR = length(get(ENV, "CI", "")) > 0 ? @__DIR__() * "/../../ex-datadir" : expanduser("~/developer/jl/ex-datadir") # hide
 spec1_path = joinpath(DATADIR, "s54405.pha")
 data = OGIPDataset(spec1_path) 
 ```
@@ -27,7 +27,7 @@ This will print a little card about our data, which shows us what else SpectralF
 
 We can check what paths it used by looking at
 ```@example walk
-data.paths
+data.user_data.paths
 ```
 
 We can load and alter any part of a dataset as we do our fitting. For example, if you have multiple different ancillary files at hand, switching them between fits is a one-liner.
@@ -130,7 +130,7 @@ update_model!(model, result)
 To estimate the goodness of our fit, we can mimic the `goodness` command from XSPEC. This will use the [`simulate`](@ref) function to simulate spectra for a dataset (here determined by the result), and fit the model to the simulated dataset. The fit statistic for each fit is then appended to an array, which we can use to plot a histogram:
 
 ```@example walk
-spread = goodness(result; N = 1000, seed = 42, exposure_time = data.data.spectrum.exposure_time)
+spread = goodness(result; N = 1000, seed = 42, exposure_time = data.spectrum.exposure_time)
 histogram(spread, ylims = (0, 300), label = "Simulated")
 vline!([result.χ2], label = "Best fit")
 ```

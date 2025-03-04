@@ -14,10 +14,7 @@ function prepare_data!(data, low, high)
 end
 
 # path to the data directory
-data1 = SpectralFitting.XmmData(
-    SpectralFitting.XmmEPIC(),
-    joinpath(testdir, "xmm/pn_spec_grp.fits"),
-)
+data1 = SpectralFitting.XmmData(joinpath(testdir, "xmm/pn_spec_grp.fits"))
 prepare_data!(data1, 0.8, 10.0)
 
 model = PhotoelectricAbsorption() * XS_PowerLaw() + XS_Laor()

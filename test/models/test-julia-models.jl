@@ -3,7 +3,7 @@ using SpectralFitting
 
 include("../utils.jl")
 
-ALL_JULIA_MODELS = [PowerLaw, BlackBody]
+ALL_JULIA_MODELS = [PowerLaw, BlackBody, BremsStrahlung]
 
 # has data requirements, so skip on the CI
 @ciskip push!(ALL_JULIA_MODELS, PhotoelectricAbsorption)

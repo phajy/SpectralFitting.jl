@@ -13,10 +13,11 @@ Order = [:type]
 ### Additive
 
 ```@docs
-PowerLaw
 BlackBody
-GaussianLine
+BremsStrahlung
 DeltaLine
+GaussianLine
+PowerLaw
 ```
 
 ### Multiplicative

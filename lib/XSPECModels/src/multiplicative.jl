@@ -87,4 +87,49 @@ function XS_WarmAbsorption(; ηH = FitParam(1.0), Ew = FitParam(1.0))
     XS_WarmAbsorption(ηH, Ew)
 end
 
-export XS_PhotoelectricAbsorption, XS_WarmAbsorption
+"""
+    XS_NeutralHydrogenAbsorption(nH)
+
+$(FIELDS)
+
+# Example
+
+```julia
+energy = collect(range(0.1, 20.0, 100))
+invokemodel(energy, XS_NeutralHydrogenAbsorption())
+```
+
+```
+            XS_NeutralHydrogenAbsorption        
+     ┌────────────────────────────────────────┐ 
+   1 │       ...''''''''''''''''''''''''''''''│ 
+     │      .'                                │ 
+     │     :                                  │ 
+     │    :'                                  │ 
+     │    :                                   │ 
+     │   :                                    │ 
+     │   :                                    │ 
+     │   :                                    │ 
+     │  :'                                    │ 
+     │  :                                     │ 
+     │  :                                     │ 
+     │  :                                     │ 
+     │  :                                     │ 
+     │ :                                      │ 
+   0 │.:                                      │ 
+     └────────────────────────────────────────┘ 
+      0                                     20  
+                       E (keV)                  
+```
+"""
+@xspecmodel :C_tbabs struct XS_NeutralHydrogenAbsorption{T} <:
+                            AbstractSpectralModel{T,Multiplicative}
+    "Neutral hydrogen column density (units of 10²² atoms per cm⁻²)"
+    nH::T
+end
+
+function XS_NeutralHydrogenAbsorption(; nH = FitParam(1.0))
+    XS_NeutralHydrogenAbsorption(nH)
+end
+
+export XS_PhotoelectricAbsorption, XS_WarmAbsorption, XS_NeutralHydrogenAbsorption
