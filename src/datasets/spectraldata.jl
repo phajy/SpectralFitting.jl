@@ -314,9 +314,15 @@ function regroup!(dataset::SpectralData, grouping; safety_copy = false)
     dataset
 end
 
-function regroup!(dataset::SpectralData; min_counts = nothing)
+function regroup!(dataset::SpectralData; min_counts = nothing, min_snr = nothing)
+    if !isnothing(min_counts) && !isnothing(min_snr)
+        error("Cannot specify both min_counts and min_snr. Choose one.")
+    end
+    
     if !isnothing(min_counts)
         group_min_counts!(dataset.spectrum, min_counts)
+    elseif !isnothing(min_snr)
+        group_min_snr!(dataset.spectrum, min_snr; background = dataset.background)
     end
     regroup!(dataset, dataset.spectrum.grouping)
 end

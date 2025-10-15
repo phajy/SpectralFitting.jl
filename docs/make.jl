@@ -33,6 +33,7 @@ makedocs(
         ],
         "Datasets" => [
             "Using datasets" => "datasets/datasets.md",
+            "Grouping & Rebinning" => "datasets/grouping-rebinning.md",
             "Mission support" => "datasets/mission-support.md",
         ],
         "Why & How" => "why-and-how.md",
