@@ -1,4 +1,4 @@
-name: docs
+name: Documentation
 
 on:
   push:
@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   docs:
-    name: Build and publish
+    name: Build
     timeout-minutes: 30
     runs-on: ubuntu-latest
     steps:
@@ -43,11 +43,6 @@ jobs:
           Pkg.Registry.add(url="https://github.com/astro-group-bristol/AstroRegistry/")
           Pkg.Registry.add(url="https://github.com/JuliaRegistries/General")
       - name: Set up environment
-        shell: julia --color=yes --project=docs {0}
-        run: |
-          using Pkg
-          Pkg.instantiate()
-      - name: Build documentation
-        run: julia --color=yes -tauto --project=docs docs/make.jl
+      - uses: julia-actions/julia-docdeploy@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

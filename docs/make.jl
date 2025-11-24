@@ -1,6 +1,7 @@
 ENV["GKSwstype"] = "100"
 
 using Documenter
+using Documenter.Remotes: GitHub
 using SpectralFitting, XSPECModels
 
 SpectralFitting.download_all_model_data()
@@ -10,6 +11,8 @@ makedocs(
     modules = [SpectralFitting, XSPECModels],
     clean = true,
     sitename = "SpectralFitting.jl",
+    authors = ["Fergus Baker"],
+    repo = GitHub("JuliaAstro/SpectralFitting.jl"),
     pages = [
         "Home" => "index.md",
         "Walkthrough" => "walkthrough.md",
@@ -38,4 +41,8 @@ makedocs(
     ],
 )
 
-deploydocs(repo = "github.com/JuliaAstro/SpectralFitting.jl.git")
+deploydocs(;
+    repo = "github.com/JuliaAstro/SpectralFitting.jl.git",
+    push_preview = true,
+    versions = ["stable" => "v^", "v#.#"], # Restrict to minor releases
+)
