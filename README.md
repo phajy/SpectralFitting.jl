@@ -4,16 +4,16 @@
 
 # SpectralFitting.jl
 
-<a href="https://github.com/fjebaker/SpectralFitting.jl/actions/workflows/test.yml">
-<img alt="Tests" src="https://github.com/fjebaker/SpectralFitting.jl/actions/workflows/test.yml/badge.svg"/>
+<a href="https://github.com/JuliaAstro/SpectralFitting.jl/actions/workflows/test.yml">
+<img alt="Tests" src="https://github.com/JuliaAstro/SpectralFitting.jl/actions/workflows/test.yml/badge.svg"/>
 </a>
 
 <a href="https://codecov.io/gh/fjebaker/SpectralFitting.jl" > 
  <img src="https://codecov.io/gh/fjebaker/SpectralFitting.jl/branch/main/graph/badge.svg?token=GU5IKBDUKU"/> 
 </a>
 
-<a href="https://github.com/fjebaker/SpectralFitting.jl/actions/workflows/docs.yml">
-<img alt="Docs" src="https://github.com/fjebaker/SpectralFitting.jl/actions/workflows/docs.yml/badge.svg"/>
+<a href="https://github.com/JuliaAstro/SpectralFitting.jl/actions/workflows/docs.yml">
+<img alt="Docs" src="https://github.com/JuliaAstro/SpectralFitting.jl/actions/workflows/docs.yml/badge.svg"/>
 </a>
 
 <a href="https://fjebaker.github.io/SpectralFitting.jl/dev/">

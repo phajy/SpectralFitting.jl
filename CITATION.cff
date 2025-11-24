@@ -9,4 +9,4 @@ title: "SpectralFitting.jl"
 version: 0.4.2
 doi: 10.5281/zenodo.7947862
 date-released: 2023-05-18
-url: "https://github.com/fjebaker/SpectralFitting.jl"
+url: "https://github.com/JuliaAstro/SpectralFitting.jl"

@@ -38,4 +38,4 @@ makedocs(
     ],
 )
 
-deploydocs(repo = "github.com/fjebaker/SpectralFitting.jl.git")
+deploydocs(repo = "github.com/JuliaAstro/SpectralFitting.jl.git")
