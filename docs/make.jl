@@ -11,7 +11,7 @@ makedocs(
     modules = [SpectralFitting, XSPECModels],
     clean = true,
     sitename = "SpectralFitting.jl",
-    authors = ["Fergus Baker"],
+    authors = "Fergus Baker <fergus@cosroe.com>",
     repo = GitHub("JuliaAstro/SpectralFitting.jl"),
     pages = [
         "Home" => "index.md",
