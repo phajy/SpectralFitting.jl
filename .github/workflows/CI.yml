@@ -1,4 +1,4 @@
-name: Test
+name: CI
 
 on:
   pull_request:
@@ -31,7 +31,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
-
       - uses: actions/checkout@v5
         with:
           repository: fjebaker/spectral-fitting-test-suite
@@ -88,7 +87,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
-
       - uses: actions/checkout@v5
         with:
           repository: fjebaker/spectral-fitting-test-suite
