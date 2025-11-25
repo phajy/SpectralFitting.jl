@@ -46,4 +46,5 @@ jobs:
       - name: Set up environment
         uses: julia-actions/julia-docdeploy@v1
         env:
+          JULIA_NUM_THREADS: "auto"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
