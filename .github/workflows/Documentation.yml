@@ -43,6 +43,6 @@ jobs:
           Pkg.Registry.add(url="https://github.com/astro-group-bristol/AstroRegistry/")
           Pkg.Registry.add(url="https://github.com/JuliaRegistries/General")
       - name: Set up environment
-      - uses: julia-actions/julia-docdeploy@v1
+        uses: julia-actions/julia-docdeploy@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
