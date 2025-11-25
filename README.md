@@ -7,7 +7,6 @@
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://juliaastro.org/SpectralFitting/stable/)
 [![Dev](https://img.shields.io/badge/docs-stable-blue.svg)](https://juliaastro.org/SpectralFitting.jl/dev/)
 [![CI](https://github.com/JuliaAstro/SpectralFitting.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/JuliaAstro/SpectralFitting.jl/actions/workflows/CI.yml)
-[![PkgEval](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/F/SpectralFitting.svg)](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/report.html)
 [![codecov](https://codecov.io/gh/JuliaAstro/SpectralFitting.jl/graph/badge.svg)](https://codecov.io/gh/JuliaAstro/SpectralFitting.jl)
 [![License](https://img.shields.io/badge/License-GPLv3-yellow.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7947862.svg)](https://doi.org/10.5281/zenodo.7947862)
