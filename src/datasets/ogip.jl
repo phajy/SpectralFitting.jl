@@ -153,7 +153,11 @@ end
 
 function read_rmf(path::String; T::Type = Float64)
     (header, rmf, channels::RMFChannels{T}) = _read_fits_and_close(path) do fits
-        rmf_hdu = get(fits, "RESP", get(fits, "MATRIX"))
+        rmf_index = findfirst(fits) do i
+            extname = get(i.cards, "EXTNAME", "")
+            occursin("RESP", extname) || occursin("MATRIX", extname)
+        end
+        rmf_hdu = fits[rmf_index]
         hdr = parse_rmf_header(rmf_hdu)
         _rmf = read_rmf_matrix(rmf_hdu, hdr, T)
         _channels = read_rmf_channels(fits["EBOUNDS"], T)
