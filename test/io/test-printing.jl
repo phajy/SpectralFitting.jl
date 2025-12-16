@@ -1,8 +1,8 @@
 using Test
 using SpectralFitting
 
-include("../utils.jl")
-include("../dummies.jl")
+
+
 
 function showstring(item)
     buffer = IOBuffer()

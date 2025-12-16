@@ -1,7 +1,7 @@
 using Test
 using SpectralFitting
 
-include("../dummies.jl")
+
 
 struct EvalCountingModel{D,T} <: AbstractTableModel{T,Additive}
     table::D

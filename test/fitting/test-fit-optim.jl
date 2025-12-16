@@ -2,7 +2,7 @@ using Test
 using SpectralFitting
 using OptimizationOptimJL
 
-include("../dummies.jl")
+
 
 # generate some fake powerlaw data with three components
 dummy_data = make_dummy_dataset(

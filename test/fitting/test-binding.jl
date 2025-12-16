@@ -1,6 +1,6 @@
 using SpectralFitting, Test
 
-include("../dummies.jl")
+
 
 dummy_data1 = make_dummy_dataset((E) -> E^(-3.0) + E^(-2.3); units = u"counts / (s * keV)")
 

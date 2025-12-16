@@ -1,7 +1,7 @@
 using Test
 using SpectralFitting
 
-include("../utils.jl")
+
 
 ALL_JULIA_MODELS = [PowerLaw, BlackBody, BremsStrahlung]
 

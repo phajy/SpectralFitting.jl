@@ -1,7 +1,7 @@
 using Test
 using SpectralFitting
 
-include("../dummies.jl")
+
 
 # put a couple of delta emission lines together
 lines = DeltaLine(; E = FitParam(3.0), K = FitParam(2.0)) + DeltaLine(; E = FitParam(7.0))

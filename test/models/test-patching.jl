@@ -25,7 +25,7 @@ set_to_five(model)
 @test model.a2.p1 == model.a1.p1
 @test model.a2.p1.value == 5.0
 
-include("../dummies.jl")
+
 
 model = PowerLaw(; K = FitParam(4.0)) + PowerLaw(; K = FitParam(8.0), a = FitParam(8.0))
 

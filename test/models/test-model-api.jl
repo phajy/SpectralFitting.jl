@@ -1,6 +1,6 @@
 using Test, SpectralFitting
 
-include("../dummies.jl")
+
 
 # single
 

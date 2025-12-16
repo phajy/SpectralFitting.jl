@@ -17,6 +17,7 @@ end
 
 SpectralFitting.download_model_data(PhotoelectricAbsorption)
 
+include("dummies.jl")
 include("utils.jl")
 
 @testset "api" verbose = true begin
