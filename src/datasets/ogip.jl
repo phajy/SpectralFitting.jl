@@ -153,51 +153,22 @@ end
 
 function read_rmf(path::String; T::Type = Float64)
     (header, rmf, channels::RMFChannels{T}) = _read_fits_and_close(path) do fits
-        rmf_i = find_extension(fits, ["RESP", "MATRIX"])
-        energy_i = find_extension(fits, "EBOUND")
-        hdr = parse_rmf_header(fits[rmf_i])
-        _rmf = read_rmf_matrix(fits[rmf_i], hdr, T)
-        _channels = read_rmf_channels(fits[energy_i], T)
+        rmf_hdu = get(fits, "RESP", get(fits, "MATRIX"))
+        hdr = parse_rmf_header(rmf_hdu)
+        _rmf = read_rmf_matrix(rmf_hdu, hdr, T)
+        _channels = read_rmf_channels(fits["EBOUNDS"], T)
         (hdr, _rmf, _channels)
     end
 
     _build_reponse_matrix(header, rmf, channels, T)
 end
 
-function find_extension(
-    fits,
-    extension::T,
-) where {T<:Union{<:AbstractString,<:AbstractVector}}
-    # find the correct extensions
-    i::Int = 2
-    for hdu in fits
-        extname = get(hdu.cards, "EXTNAME", nothing)
-        if isnothing(extname)
-            continue
-        end
-
-        if T <: AbstractString
-            if contains(extname, extension)
-                return i
-            end
-        elseif T <: AbstractVector
-            for ext in extension
-                if contains(extname, ext)
-                    return i
-                end
-            end
-        end
-        i += 1
-    end
-    return nothing
-end
-
 function read_ancillary_response(path::String; T::Type = Float64)
     (bins_low, bins_high, effective_area) = _read_fits_and_close(path) do fits
-        i = find_extension(fits, "RESP")
-        area::Vector{T} = convert.(T, fits[i].data.SPECRESP)
-        lo::Vector{T} = convert.(T, fits[i].data.ENERG_LO)
-        hi::Vector{T} = convert.(T, fits[i].data.ENERG_HI)
+        hdu = fits["SPECRESP"]
+        area::Vector{T} = convert.(T, hdu.data.SPECRESP)
+        lo::Vector{T} = convert.(T, hdu.data.ENERG_LO)
+        hi::Vector{T} = convert.(T, hdu.data.ENERG_HI)
         (lo, hi, area)
     end
     SpectralFitting.AncillaryResponse{T}(bins_low, bins_high, effective_area)
