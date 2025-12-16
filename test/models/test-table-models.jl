@@ -1,7 +1,7 @@
 using Test
 using SpectralFitting
 
-include("../dummies.jl")
+
 
 # multiplicative
 

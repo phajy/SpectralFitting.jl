@@ -1,7 +1,7 @@
 using SpectralFitting
 using Test
 
-include("../dummies.jl")
+
 
 # single model
 m = PowerLaw()

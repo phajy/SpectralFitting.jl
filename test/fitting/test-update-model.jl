@@ -1,6 +1,6 @@
 using Test, SpectralFitting
 
-include("../dummies.jl")
+
 
 # composite power law
 dummy_data = make_dummy_dataset((E) -> (E^(-3.0) + E^(-1)); units = u"counts / (s * keV)")

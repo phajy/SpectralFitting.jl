@@ -1,7 +1,7 @@
 using Test
 using SpectralFitting
 
-include("../dummies.jl")
+
 
 dataset = make_dummy_dataset(i -> i^-2)
 

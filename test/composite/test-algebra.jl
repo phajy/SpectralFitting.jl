@@ -1,7 +1,7 @@
 using Test
 using SpectralFitting
 
-include("../dummies.jl")
+
 
 add_model = DummyAdditive()
 mul_model = DummyMultiplicative()

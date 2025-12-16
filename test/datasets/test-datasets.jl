@@ -1,6 +1,6 @@
 using SpectralFitting, Test
 
-include("../dummies.jl")
+
 
 data = make_dummy_dataset(collect(range(1.0, 0.0, 10)), collect(range(0, 15.0, 11)))
 
